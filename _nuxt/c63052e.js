@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[52],{633:function(t,e,n){"use strict";n.r(e);var c={created:function(){this.$router.push("/home/products")}},o=n(4),component=Object(o.a)(c,(function(){var t=this.$createElement,e=this._self._c||t;return e("div",{staticClass:"home"},[e("nuxt-child")],1)}),[],!1,null,"acfbf3ba",null);e.default=component.exports}}]);
