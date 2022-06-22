@@ -1,80 +1,36 @@
+import {getProduct,getProductC,getProductS,getProductE,orderby,addProduct,editProduct,removeProduct,getDetails,getRandomProd,postimg} from '../plugins/api';
+import {API} from '@/plugins/axios';
 export const state = () =>({
-    products:[
-        {name:'玉米蛋餅',price:45,sale:5},
-        {name:'蘑菇麵+蛋',price:50,sale:5},
-        {name:'營養早餐',price:45,sale:0},
-        {name:'里肌總匯',price:45,sale:0},
-        {name:'抓餅加蛋',price:40,sale:20},
-        {name:'煎餃',price:40,sale:10},
-        {name:'蘿蔔糕',price:40,sale:10},
-        {name:'厚切牛肉堡',price:70,sale:0},
-        {name:'果醬厚片',price:25,sale:0},
-        {name:'大冰奶',price:30,sale:5},
-        {name:'玉米蛋餅',price:45,sale:5},
-        {name:'蘑菇麵+蛋',price:50,sale:5},
-        {name:'營養早餐',price:45,sale:0},
-        {name:'里肌總匯',price:45,sale:0},
-        {name:'抓餅加蛋',price:40,sale:20},
-        {name:'煎餃',price:40,sale:10},
-        {name:'蘿蔔糕',price:40,sale:10},
-        {name:'厚切牛肉堡',price:70,sale:0},
-        {name:'果醬厚片',price:25,sale:0},
-        {name:'大冰奶',price:30,sale:5},
-        {name:'玉米蛋餅',price:45,sale:5},
-        {name:'蘑菇麵+蛋',price:50,sale:5},
-        {name:'營養早餐',price:45,sale:0},
-        {name:'里肌總匯',price:45,sale:0},
-        {name:'抓餅加蛋',price:40,sale:20},
-        {name:'煎餃',price:40,sale:10},
-        {name:'蘿蔔糕',price:40,sale:10},
-        {name:'厚切牛肉堡',price:70,sale:0},
-        {name:'果醬厚片',price:25,sale:0},
-        {name:'大冰奶',price:30,sale:5},
-    ],
-    productsBak:[
-        {name:'玉米蛋餅',price:45,sale:5},
-        {name:'蘑菇麵+蛋',price:50,sale:5},
-        {name:'營養早餐',price:45,sale:0},
-        {name:'里肌總匯',price:45,sale:0},
-        {name:'抓餅加蛋',price:40,sale:20},
-        {name:'煎餃',price:40,sale:10},
-        {name:'蘿蔔糕',price:40,sale:10},
-        {name:'厚切牛肉堡',price:70,sale:0},
-        {name:'果醬厚片',price:25,sale:0},
-        {name:'大冰奶',price:30,sale:5},
-        {name:'玉米蛋餅',price:45,sale:5},
-        {name:'蘑菇麵+蛋',price:50,sale:5},
-        {name:'營養早餐',price:45,sale:0},
-        {name:'里肌總匯',price:45,sale:0},
-        {name:'抓餅加蛋',price:40,sale:20},
-        {name:'煎餃',price:40,sale:10},
-        {name:'蘿蔔糕',price:40,sale:10},
-        {name:'厚切牛肉堡',price:70,sale:0},
-        {name:'果醬厚片',price:25,sale:0},
-        {name:'大冰奶',price:30,sale:5},
-        {name:'玉米蛋餅',price:45,sale:5},
-        {name:'蘑菇麵+蛋',price:50,sale:5},
-        {name:'營養早餐',price:45,sale:0},
-        {name:'里肌總匯',price:45,sale:0},
-        {name:'抓餅加蛋',price:40,sale:20},
-        {name:'煎餃',price:40,sale:10},
-        {name:'蘿蔔糕',price:40,sale:10},
-        {name:'厚切牛肉堡',price:70,sale:0},
-        {name:'果醬厚片',price:25,sale:0},
-        {name:'大冰奶',price:30,sale:5},
-    ],
+    pid:0,
     name:'',
     price:0,
     sale:0,
-    key_word:''
+    qty:0,
+    img:'',
+    description:'',
+    category:'',
+    key_word:'',
+    products:[],
+    productsBak:[],
+    RandomProduct:[],
+    product:[],
+    loading:true
 });
 
 export const actions ={
+    //test
+    sentImg({commit},data){
+        postimg(data).then(res=>{
+            console.log(res.data)
+        })
+    },
     changeproduct({commit},item){
         commit('Changeproduct',item)
     },
     searchitem({commit},data){
-        commit('Searchitem',data)
+        getProductS(data).then(res=>{
+            commit('Searchitem',res.data)
+        })
     },
     allitem({commit}){
         commit('Allitem')
@@ -83,26 +39,80 @@ export const actions ={
         commit('Getdata',data)
     },
     editdata({commit},data){
-        commit('Editdata',data)
+        editProduct(data).then(res=>{
+            commit('Changeproduct',res.data)
+        })
     },
-    removedata({commit},data){
-        commit('Removedata',data)
+    async removedata({commit},data){
+        await API('delete',`Product/${data.pid}`).then((res)=>{
+            commit('Removedata',res.data)
+        })
+        await API('get','Product').then((res)=>{
+            commit('GetProduct',res.data)
+        })
     },
-    adddata({commit},data){
-        commit('Adddata',data)
+    getProduct({commit}){
+        API('get','Product').then((res)=>{
+            commit('GetProduct',res.data)
+        })
+    },
+    getProdDetails({commit},data){
+        new Promise((resolve, reject) => {
+            getDetails(data).then(res=>{
+                console.log(res.data)
+                commit('Changeproduct',res.data)
+                resolve();
+            })
+        })
+    },
+    getProdDetail({commit},data){
+        new Promise((resolve, reject) => {
+            getDetails(data).then(res=>{
+                commit('reflasgProduct',res.data)
+                resolve();
+            })
+        })
+    },
+    getProductCategory({commit},data){
+        getProductC(data).then(res=>{
+            commit('GetProductCategory',res.data)
+        })
+    },
+    productorderby({commit},data){
+        orderby(data).then(res=>{
+            commit('GetProduct',res.data) 
+        })
+    },
+    exception({commit},data){
+        getProductE(data).then(res=>{
+            commit('GetProduct',res.data) 
+        })
+    },
+    getrandom({commit}){
+        getRandomProd().then(res=>{
+            commit('SetRandomProduct',res.data) 
+        })
     }
 };
 
 export const mutations ={
+    GetProduct(state ,data){
+        state.products=data;
+        state.productsBak=data;
+    },
+    GetProductCategory(state ,data){
+        state.products=data;
+    },
     Changeproduct(state,item){
-        state.name=item.name
-        state.price=item.price
-        state.sale=item.sale
+        state.product=item;
     },
     Searchitem(state,data){
-        state.key_word=data;
         state.products=state.productsBak;
-        state.products=state.products.filter(item=>item.name.match(data));
+        state.products=data;
+    },
+    reflasgProduct(state,data){
+        state.product=data;
+        state.loading=false;
     },
     Allitem(state){
         state.products=state.productsBak;
@@ -119,7 +129,8 @@ export const mutations ={
         state.products[i].sale=data.sale;
     },
     Removedata(state,data){
-        state.products.splice(data,1)
+        state.products=data;
+        state.productsBak=data;
     },
     Adddata(state,data){
         state.products.push(data)
@@ -132,6 +143,24 @@ export const mutations ={
     },
     setsale(state,val){
         state.sale=val;
+    },
+    setdescription(state,val){
+        state.description=val;
+    },
+    setcategory(state,val){
+        state.category=val;
+    },
+    setpid(state,val){
+        state.pid=val;
+    },
+    setimg(state,val){
+        state.img=val;
+    },
+    SetRandomProduct(state,val){
+        state.RandomProduct=val;
+    },
+    setLoading(state){
+        state.loading=true;
     }
 };
 

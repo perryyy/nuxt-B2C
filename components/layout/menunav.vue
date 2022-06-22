@@ -3,12 +3,12 @@
         <div class="title">分類</div>
         <div class="category">
             <ul>
-                <li v-for="(item,index) in categoryItem" :key="index" class="category_item" @click="changetitle(item)">{{item}}</li>
+                <li v-for="(item,index) in categoryItem" :key="index" class="category_item" @click="changetitle(item.name)">{{item.name}}</li>
             </ul>
         </div>
         <div class="brand">
             <ul>
-                <li v-for="(item,index) in brandItem" :key="index" class="brandItem_item" @click="changetitle(item)">{{item}}</li>
+                <li v-for="(item,index) in foodItem" :key="index" class="brandItem_item" @click="changetitle(item.name)">{{item.name}}</li>
             </ul>
         </div>
     </div>
@@ -17,14 +17,25 @@
 export default {
     data(){
         return{
-            categoryItem:['漢堡','蛋餅','捲餅','總匯三明治','麵類','吐司、厚片','美味小點'],
-            brandItem:['厚切牛肉蛋堡','薯餅蛋餅','醬燒雞總匯','果醬厚片','鐵板麵','蔥抓餅加蛋','熱狗']
         }
+    },
+    created(){
+        this.$store.dispatch('param/getCategory',{category:'種類'});
+        this.$store.dispatch('param/getFood',{category:'熱門點心'});
     },
     methods:{
         changetitle(x){
+            this.$store.dispatch('product/getProductCategory',x);
             this.$store.dispatch('setting/changeTitle',x);
         }
+    },
+    computed:{
+        categoryItem(){
+            return this.$store.state.param.category
+        },
+        foodItem(){
+            return this.$store.state.param.Foods
+        },
     }
 }
 </script>

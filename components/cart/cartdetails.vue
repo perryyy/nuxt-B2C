@@ -6,32 +6,26 @@
                     選擇送貨或付款方式
                 </div>
                 <div class="content">
+                    <div class="delivermethods">
+                        <span class="content_title">送餐方式：</span>
+                        <select class="form-control"  v-model="delivermethods" @change="changeLocation">
+                            <option v-for="(item,index) in Delivery " :key="item.PID" >{{item.name}}</option>
+                        </select>
+                    </div>
                     <div class="location">
                         <span class="content_title">送餐地點：</span>
                         <select class="form-control"v-model="location">
-                            <option value="台灣">台灣</option>
-                        </select>
-                    </div>
-                    <div class="delivermethods">
-                        <span class="content_title">送餐方式：</span>
-                        <select class="form-control"  v-model="delivermethods">
-                              <option value="買家自取">買家自取</option>
-                              <option value="商家外送">商家外送</option>
-
+                            <option value="店家">店家</option>
+                            <option value="目前所在地" v-if="delivermethods=='商家外送'">目前所在地</option>
                         </select>
                     </div>
                     <div class="paymethod">
                         <span class="content_title">付款方式：</span>
                         <select class="form-control"  v-model="paymethod">
-                              <option value="信用卡">信用卡</option>
-                              <option value="現金">現金</option>
-                        </select>
+                              <option value="行動支付">行動支付</option>
+                              <option value="現金" v-if="delivermethods=='買家自取'">現金</option>
+                        </select> 
                     </div>
-                </div>
-                <div class="msg">
-                    <div class="content_title">請注意：</div>
-                    <div class="msg1">{{msg1}}</div>
-                    <div class="msg2">{{msg2}}</div>
                 </div>
             </div>
         </div>
@@ -42,27 +36,14 @@
                     <div class="subtotal between"><span>小計：</span><p>{{subtotal}}</p></div>
                     <div class="freight between"><span>運費：</span><p>{{freight}}</p></div>
                     <div class="fee between"><span>附加費：</span><p>{{fee}}</p></div>
-                    <div class="sale">
-                        <div class="discount">
-                            <span class="code" @click="discountisShow=true">優惠代碼</span>
-                            <div class="code_input" v-if="discountisShow">
-                                <el-input v-model="inputDiscount" placeholder="请输入内容"></el-input>  <el-button type="info" plain class="Apply">套用</el-button>
-                            </div>
-                        </div>
-                        <div class="recommend">
-                            <span class="code" @click="recommendisShow=true">推薦代碼</span>
-                            <div class="code_input" v-if="recommendisShow">
-                                <el-input v-model="inputRecommend" placeholder="请输入内容"></el-input>  <el-button type="info" plain class="Apply">套用</el-button>
-                            </div>
-                        </div>
-                    </div>
                     <el-divider></el-divider>
                     <div class="total">
                         <div class="amt between">
                             <span>合計：</span><p>NT${{total}}</p>
                         </div>
                         <div class="checkout">
-                            <el-button type="success" style="width:'100%'" @click="gocheckout()">前往結帳</el-button>
+                            <el-button type="success" style="width:'100%'" v-if="cartlen" @click="gocheckout()">前往結帳</el-button>
+                            <el-button type="success" style="width:'100%'" v-else @click="continueShopping()">繼續選購</el-button>
                         </div>
                     </div>
                 </div>
@@ -75,12 +56,9 @@ import {  mapGetters } from 'vuex';
 export default{
     data(){
         return{
-            location:'台灣',
+            location:'店家',
             delivermethods:'買家自取',
-            paymethod:'信用卡',
-            msg1:'1.未完成刷卡請勿切換視窗或者瀏覽器，避免結帳失敗。',
-            msg2:'',
-            // freight:60,
+            paymethod:'現金',
             fee:0,
             recommendisShow:false,
             discountisShow:false,
@@ -89,46 +67,58 @@ export default{
         }
     },
     methods:{
-        test(){
-            let data ={location:this.location,delivermethods:this.delivermethods,paymethod:this.paymethod};
-            console.log(data);
+        continueShopping(){
+            this.$router.push('/home/products')
         },
         gocheckout(){
             this.$store.dispatch('setting/addactive');
             this.$store.dispatch('cart/setfinallytotal',this.total);
+            this.$store.commit('order/setPaymethod',this.paymethod);
+            this.$store.commit('order/setLocation',this.location);
+            this.$store.commit('order/setDelivermethods',this.delivermethods);
             this.$router.push('/home/buy/inputdata');
             document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0;
+        },
+        changeLocation(){
+            if(this.delivermethods=='買家自取'){
+                this.location="店家";
+            }
+            else if(this.delivermethods=='商家外送'){
+                this.location="目前所在地";
+                this.paymethod="行動支付";
+            }
         }
-
     },
     watch:{
-        delivermethods(newv,oldv){
-            if (newv==="全家便利取貨付款"){
-                this.msg1="1. 購買一雙鞋以上會超過全家運送規定體積，請選宅配，否則視情況拆鞋盒後寄出";
-                this.msg2="2. 收件者名稱必須要是本人全名同身分證，否則無法取貨"
-            }
-            else{
-                this.msg1='1.未完成刷卡請勿切換視窗或者瀏覽器，避免結帳失敗。',
-                this.msg2='2.若購買後商品退換貨，將由系統做信用卡退刷'
-            }
-        }
     },
     computed:{
         ...mapGetters({
-            subtotal: 'cart/totalAmt'
+            subtotal: 'cart/totalAmt',
+            cartlen: 'cart/cartslength'
         }),
+        freight(){
+            if(this.delivermethods=='商家外送'){
+                if (this.subtotal >= 488){
+                    return 0
+                }
+                else{
+                    return 60
+                }
+            }
+            else{
+                return 0
+            }
+        },
+        Delivery(){
+            return this.$store.state.param.Delivery
+        },
         total(){
             return this.subtotal+this.freight+this.fee
         },
-        freight(){
-            if (this.subtotal >= 488){
-                return 0
-            }
-            else{
-                return 60
-            }
-        }
+    },
+    created(){
+        this.$store.dispatch('param/getDelivery',{category:'送餐方式'});
     }
 }
 </script>
@@ -167,7 +157,7 @@ export default{
     /deep/.el-select{
         width: 80%;
     }
-    .delivermethods,.paymethod{
+    .paymethod,.location{
         width: 100%;
         margin-top: 2%;
     }

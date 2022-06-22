@@ -4,40 +4,94 @@
             <div class="detail">
             <div class="orderdata">
                 <div class="title">訂單資訊</div>
-                <div class="orderid content_flex"><p class="content_title">訂單號碼：</p><p>{{orderdata[0].id}}</p></div>
-                <div class="orderdate content_flex"><p class="content_title">訂單日期：</p><p>{{orderdata[0].date}}</p> </div>
-                <div class="orderstatus content_flex"><p class="content_title">訂單狀態：</p><p>{{orderdata[0].status}}</p></div>
+                <div class="orderid content_flex"><p class="content_title">訂單號碼：</p><p>{{order_oid}}</p></div>
+                <div class="orderdate content_flex"><p class="content_title">訂單日期：</p><p>{{order_date}}</p> </div>
+                <div class="orderstatus content_flex"><p class="content_title">訂單狀態：</p><p>{{order_status}}</p></div>
             </div>
             <div class="buyerdata">
                 <div class="title">顧客資訊</div>
-                <div class="buyername content_flex"><p class="content_title">名稱：</p><p>{{buyerdata[0].name}}</p></div>
-                <div class="buyerphone content_flex"><p class="content_title">電話號碼：</p><p>{{buyerdata[0].phone}}</p></div>
+                <div class="buyername content_flex"><p class="content_title">名稱：</p><p>{{customer_name}}</p></div>
+                <div class="buyerphone content_flex"><p class="content_title">電話號碼：</p><p>{{customer_phone}}</p></div>
             </div>
             <div class="deliverdata">
                 <div class="title">送貨資訊</div>
-                <div class="delivername content_flex"><p class="content_title">收件人姓名：</p><p>{{deliverdata[0].name}}</p></div>
-                <div class="deliverphone content_flex"><p class="content_title">收件人電話號碼：</p><p>{{deliverdata[0].phone}}</p></div>
-                <div class="delivermethod content_flex"><p class="content_title">送貨方式：</p><p>{{deliverdata[0].method}}</p></div>
-                <div class="deliverstatus content_flex"><p class="content_title">送貨狀態：</p><p>{{deliverdata[0].status}}</p></div>
+                <div class="delivername content_flex"><p class="content_title">收件人姓名：</p><p>{{deliver_name}}</p></div>
+                <div class="deliverphone content_flex"><p class="content_title">收件人電話號碼：</p><p>{{deliver_phone}}</p></div>
+                <div class="delivermethod content_flex"><p class="content_title">送貨方式：</p><p>{{deliver_methods}}</p></div>
+                <div class="deliverstatus content_flex"><p class="content_title">送貨狀態：</p><p>{{deliver_status}}</p></div>
             </div>
             <div class="paydata">
                 <div class="title">付款資訊</div>
-                <div class="paymethod content_flex"><p class="content_title">付款方式：</p><p>{{paydata[0].method}}</p></div>
-                <div class="paystatus content_flex"><p class="content_title">付款狀態：</p><p>{{paydata[0].status}}</p></div>
+                <div class="paymethod content_flex"><p class="content_title">付款方式：</p><p>{{pay_methods}}</p></div>
+                <div class="paystatus content_flex"><p class="content_title">付款狀態：</p><p>{{pay_status}}</p></div>
             </div>
             </div>
         </div>
     </div>
 </template>
 <script>
+import moment from 'moment';
 export default {
     data(){
         return{
-            orderdata:[{id:13564,date:'2022-03-12',status:'已完成'}],
-            buyerdata:[{name:'Perry',phone:'0945789456'}],
-            deliverdata:[{name:'Perry',phone:'0945789456',method:'實體商店取貨',status:'已取貨'}],
-            paydata:[{method:'實體商店付款',status:'已付款'}],
         }
+    },
+    computed:{
+        customer_name(){
+            return this.$store.state.order.order_m[0].customer_name
+        },
+        customer_phone(){
+            return this.$store.state.order.order_m[0].customer_phone
+        },
+        deliver_name(){
+            return this.$store.state.order.order_m[0].deliver_name
+        },
+        deliver_phone(){
+            return this.$store.state.order.order_m[0].deliver_phone
+        },
+        deliver_address(){
+            return this.$store.state.order.order_m[0].deliver_address
+        },
+        deliver_methods(){
+            return this.$store.state.order.order_m[0].deliver_methods
+        },
+        deliver_status(){
+            if(this.$store.state.order.order_m[0].deliver_status == "N")
+            {
+                return "未完成"
+            }
+            else{
+                return "已完成"
+            }
+        },
+        order_oid(){
+            return this.$store.state.order.order_m[0].oid
+        },
+        order_date(){
+            
+            return moment(this.$store.state.order.order_m[0].order_date).format('YYYY-MM-DD')
+        },
+        order_status(){
+            if(this.$store.state.order.order_m[0].order_status == "N")
+            {
+                return "未完成"
+            }
+            else{
+                return "已完成"
+            }
+        },
+        pay_methods(){
+            return this.$store.state.order.order_m[0].pay_method
+        },
+        pay_status(){
+            if(this.$store.state.order.order_m[0].pay_status == "N")
+            {
+                return "未完成"
+            }
+            else{
+                return "已完成"
+            }
+        },
     }
 }
 </script>

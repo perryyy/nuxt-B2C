@@ -58,4 +58,9 @@ export default {
         font-size: 12px;
         font-weight: 600;
     }
+    @media screen and (max-width: 415px){
+        .invoicedata{
+            padding: 0;
+        }
+    }
 </style>

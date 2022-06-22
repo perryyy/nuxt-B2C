@@ -2,7 +2,8 @@
     <div class="prod_card">
         <div class="card" v-for="(item,index) in products" :key="index" @click="goProd(item)">
             <div class="top">
-                <img :src="image">
+                <img :src="'data:image/jpg;base64,'+item.img" :height="height" :width="width" alt="這裡是商品圖片">
+                <div class="sold_out" v-if="item.qty<1"><span><el-tag type="info">售完</el-tag></span></div>
             </div>
             <div class="bottom">
                 <div class="font prod_name">{{item.name}}</div>
@@ -16,16 +17,19 @@
 export default {
     data(){
         return{
-            image:'https://fakeimg.pl/250x300/'
+            height:300,
+            width:250
         }
     },
     created(){
         let isMobile = this.$store.state.setting.isMobile;
         if(isMobile===false){
-            this.image='https://fakeimg.pl/250x300/'
+            this.height=300;
+            this.width=250;
         }
         else{
-            this.image='https://fakeimg.pl/120x120/'
+            this.height=120;
+            this.width=120;
         }
     },
     props:{
@@ -33,9 +37,11 @@ export default {
     },
     methods:{
         goProd(x){
-            console.log(x);
-            this.$store.dispatch('product/changeproduct',x);
-            this.$router.push("/home/product");
+            this.$store.commit('product/setLoading');
+            this.$axios.get(`https://localhost:44377/api/product/${x.pid}`).then(res=>{
+                this.$store.commit('product/reflasgProduct',res.data);
+                this.$router.push("/home/product");
+            })
             document.body.scrollTop = 0
             document.documentElement.scrollTop = 0
         }
@@ -58,6 +64,7 @@ export default {
         max-width: 28%;
         margin:0 1%;
         border: none;
+        position: relative;
         word-break: break-all;
     }
     .font{
@@ -75,10 +82,28 @@ export default {
     .bottom{
         margin-top: 4%;
     }
+    .top{
+    }
+    .sold_out{
+        position: absolute;
+        bottom: 95px;
+        right: 25px;
+        z-index: 100;
+    }
+    /deep/.el-tag--info{
+        background-color: black;
+        color: white;
+        font-weight: 700;
+        border: none;
+    }
     @media (max-width: 415px) {
         .card{
             min-width: 48%;
             max-width: 48%;
+        }
+        .sold_out{
+            bottom: 75px;
+            right: 40px;
         }
     }
 </style>

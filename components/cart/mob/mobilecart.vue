@@ -1,21 +1,25 @@
 <template>
     <div class="cartarea">
-        <div class="cart_list" v-for="(item,index) in carts" :key="index">
-            <div class="item_deatil" >
-                <div class="img">
-                    <img src="https://fakeimg.pl/60x60/">
-                </div>
-                <div class="item" >
-                    <div class="item_name">
-                        {{carts[index].itemname}}
+        <div  v-for="(item,index) in carts" :key="index">
+            <div class="cart_list" v-for="(content,i) in item.pid" :key="i">
+                <div class="item_deatil" >
+                    <div class="img">
+                        <img :src="'data:image/jpg;base64,'+content.img" class="img_size">
                     </div>
-                    <div class="item_price">
-                        NT＄ {{carts[index].itemprice-carts[index].itemsale}}
-                    
-                    </div>       
-                </div>
-                <div class="cancel">
-                    <i class="el-icon-circle-close" @click="removercart(index)"></i>
+                    <div class="item" >
+                        <div class="item_name">
+                            {{content.name}}
+                        </div>
+                        <div class="item_price">
+                            NT＄ {{content.price-content.sale}}
+                        </div>       
+                    </div>
+                    <div class="qty">
+                        Ｘ{{item.qty}}
+                    </div>
+                    <div class="cancel">
+                        <i class="el-icon-circle-close" @click="removercart(item.cid)"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -23,17 +27,9 @@
 </template>
 <script>
 export default {
-    computed:{
-        // item_name(){
-        //     return this.$store.state.cart.carts[0].itemname
-        // },
-        // item_price(){
-        //     return this.$store.state.cart.carts[0].itemprice
-        // }
-    },
     data(){
         return{
-            itemname:'123456'
+            
         }
     },
     props:{
@@ -57,7 +53,6 @@ export default {
     border-top: solid 1px #dddddd;
     border-bottom: solid 1px #dddddd;
     padding:10px 0 10px  10px;
-    /* max-height: 70vh; */
     margin-bottom: 20%;
 }
 .img{
@@ -67,7 +62,7 @@ export default {
     align-items: center;
 }
 .item{
-    width: 60%;
+    width: 50%;
     padding: 0 10px;
 }
 .item_name,.item_price{
@@ -91,7 +86,17 @@ export default {
     height: inherit;
 }
 .cancel{
-    margin-left: 4%;
+    margin-right: 4%;
     cursor: pointer;
+}
+.qty{
+    width: 15%;
+    display: flex;
+    text-align: center;
+    align-items: center;
+}
+.img_size{
+    width: 60px;
+    height: 60px;
 }
 </style>

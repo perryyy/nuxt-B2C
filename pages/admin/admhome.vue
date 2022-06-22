@@ -10,10 +10,10 @@ export default{
     meta:{title:'管理員首頁'},
     created(){
         let token = this.$store.state.member.token;
-        if(token!='Admin'){
-            this.$router.push('/Login');
-        }
-        this.$router.push('/admin/admhome/admMember')
+        // if(token!='Admin'){
+        //     this.$router.push('/Login');
+        // }
+        this.$router.push('/admin/admhome/admNowOrder')
     },
 }
 </script>

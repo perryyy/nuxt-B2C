@@ -1,8 +1,10 @@
 <template>
     <div class="mob_ordercart">
         <div class="card">
-            <div class="title">購物車 ({{length}}件) <i class="el-icon-share"></i></div>
-            <div class="list"><item :data="cart"/></div>
+            <div class="title">購物車 ({{cartlen}}件) <i class="el-icon-share"></i></div>
+            <div class="list">
+                <item />
+            </div>
             <div class="promotion">
                 <div class="promotion_top">
                 </div>
@@ -18,6 +20,7 @@
 </template>
 <script>
 import item from '../../order/mobile/orderItem.vue';
+import {  mapGetters } from 'vuex';
 export default{
     data(){
         return{
@@ -31,6 +34,10 @@ export default{
         cart(){
             return this.$store.state.cart.carts
         },
+        ...mapGetters({
+            totalAmt: 'cart/totalAmt',
+            cartlen: 'cart/cartslength'
+        }),
     }
 }
 </script>

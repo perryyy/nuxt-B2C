@@ -5,25 +5,22 @@
                 <div class="logo" @click="home">
                     <i class="el-icon-eleme"></i>
                 </div>
-                <div class="all" @click="changetitle('所有餐點')">
-                    所有餐點
-                </div>
-                <div class="discount" @click="changetitle('超優惠組合')">
-                    超優惠組合
+                <div class="all" v-for="(item,index) in headerItem " :key="item.PID" @click="changetitle(item.name)">
+                    {{item.name}}
                 </div>
             </div>
             <div class="header_right">
                 <div class="search"  @click="Searchdrawer = true"><i class="el-icon-search" ></i></div>
                 <div class="cart" v-if="auth==='user'" @click="Cartdrawer = true">
-                    <el-badge :value="storeCart.length" :max="5" class="item" v-if="storeCart.length">
+                    <el-badge :value="cartlen" :max="5" class="item" v-if="storeCart.length">
                         <i class="el-icon-goods"></i> 
                     </el-badge>    
                     <div v-else>
                         <i class="el-icon-goods"></i> 
                     </div>
                 </div>
-                <div class="user" v-if="auth==='user'" @click="$router.push('/member')"><i class="el-icon-user"></i> </div>
-                <div class="user" v-if="auth==='none'" @click="$router.push('/login')"><i class="el-icon-s-home"></i> </div>
+                <div class="user" v-if="auth=='user'" @click="$router.push('/member')"><i class="el-icon-user"></i> </div>
+                <div class="user" v-if="auth=='none'" @click="$router.push('/login')"><i class="el-icon-s-home"></i> </div>
             </div>
             <div class="Searchdrawer">
                 <el-drawer
@@ -53,6 +50,7 @@
 <script>
 import prettyinput from './preetyinput.vue';
 import cart from '../cart/cart.vue';
+import {  mapGetters } from 'vuex';
 export default{
     data(){
         return{
@@ -62,6 +60,12 @@ export default{
             Cartdirection: 'rtl',
         }
     },
+    created(){
+        this.$store.dispatch('param/getHeader',{category:'header'});
+        if(this.$store.state.member.mid){
+            this.$store.dispatch('cart/getCart',{mid:this.$store.state.member.mid});
+        }
+    },
     components:{
         prettyinput,
         cart
@@ -69,10 +73,19 @@ export default{
     methods:{
         changetitle(x){
             this.$store.dispatch('setting/changeTitle',x);
-            this.$store.dispatch('product/allitem');
+            this.$store.dispatch('product/getProduct');
+            this.$router.push('/home/products');
+            const foo = async () => {
+                return 1;
+            }
+
+            foo().then((res) => {
+                console.log(res);
+            });
         },
         buy(a){
             console.log(a);
+            this.Cartdrawer =!this.Cartdrawer;
             this.$router.push('/home/buy')
         },
         changeType(z){
@@ -80,8 +93,8 @@ export default{
         },
         home(){
             this.$router.push('/home/products');
-            this.$store.dispatch('product/allitem');
-        }
+            this.$store.dispatch('product/getProduct');
+        },  
     },
     computed:{
         storeCart(){
@@ -89,7 +102,13 @@ export default{
         },
         auth(){
             return this.$store.state.member.auth
-        }
+        },
+        headerItem(){
+            return this.$store.state.param.headerItem
+        },
+         ...mapGetters({
+            cartlen: 'cart/cartslength'
+        }),
     }
 }
 </script>
@@ -97,7 +116,7 @@ export default{
     .pageheader{
         width: auto;
         background-color: lightgray;
-        min-height: 8vh;
+        min-height: 7vh;
     }
     .el-icon-eleme{
         width: 50px;
@@ -156,7 +175,7 @@ export default{
         overflow-x:hidden;
     }
     .buy_btn_area{
-        width: 100%;
+        width: 100vw;
         position: fixed;
         bottom: 0;
         padding:20px 30px;

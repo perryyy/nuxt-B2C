@@ -3,14 +3,27 @@
         <div class="border">
             <div class="title">訂單備註</div>
             <div class="content">
-                <textarea class="form-control" rows="3" placeholder="有什麼想跟賣家說的嗎？"></textarea>
+                <textarea class="form-control" rows="10" placeholder="有什麼想跟賣家說的嗎？" v-model="notes"></textarea>
             </div>
         </div>
     </div>
 </template>
 <script>
 export default {
-
+    data(){
+        return{
+        }
+    },
+    computed:{
+        notes:{
+            get () {
+                return this.$store.state.order.notes
+            },
+            set (value) {
+                this.$store.commit('order/setNotes', value)
+            }
+        }
+    }
 }
 </script>
 <style scoped>
@@ -29,5 +42,10 @@ export default {
     .content{
         padding:20px;
         text-align: left;
+    }
+    @media screen and (max-width: 415px){
+        .orderdata{
+            padding: 0;
+        }
     }
 </style>

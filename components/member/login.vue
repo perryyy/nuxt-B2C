@@ -5,10 +5,10 @@
             <el-divider></el-divider>
         </div>
         <div class="username login_input">
-            <el-input v-model="email" placeholder="請輸入電子郵件"></el-input>
+            <el-input v-model.trim="email" placeholder="請輸入電子郵件"></el-input>
         </div>
         <div class="password login_input">
-            <el-input v-model="password" placeholder="請輸入密碼"></el-input>
+            <el-input v-model.trim="password" placeholder="請輸入密碼" show-password></el-input>
         </div>
         <div class="remember login_input">
             <el-checkbox v-model="checked">Remember Me</el-checkbox>
@@ -17,7 +17,7 @@
             <el-button type="primary" style="width:100%" @click="login">登入</el-button>
         </div>
         <div class="forgetpsw login_input">
-            <el-button type="success" style="width:100%">忘記密碼？</el-button>
+            <el-button type="success" style="width:100%" @click="goForgetPSW">忘記密碼？</el-button>
         </div>
     </div>
 </template>
@@ -50,24 +50,34 @@ export default {
                 localStorage.removeItem("userId");
                 localStorage.removeItem("password");
             }
-            // this.$store.dispatch('MemberData/setUsername',username);
             localStorage.setItem('username', 'perry');
-            // this.$router.push("/home/products");
-
-            if(this.email==="123456"&&this.password==="123456"){
-                let data = {email:this.email,username:'Perry',password:this.password,auth:'user',token:'123456'};
-                this.$store.dispatch('member/setdata',data);
-                this.$router.push("/home/products");
-            }
-            else if(this.email==="Admin"&&this.password==="Admin"){
-                let data = {email:this.email,username:'Admin',password:this.password,auth:'Admin',token:'Admin'};
-                this.$store.dispatch('member/setdata',data);
-                this.$router.push("/admin/admhome");
-            }
-            else{
-                this.$router.push("/login");
-            }
+            let data={username:this.email,password:this.password};
+            this.$axios.post('https://localhost:44377/api/Login/',data)
+            .then(res=>{
+                if(res.data.status=='success'){
+                    if(res.data.data.token){
+                        localStorage.setItem("token",'Bearer '+res.data.data.token);
+                    }
+                    if(res.data.data.auth=='Admin'){
+                        this.$store.dispatch('member/setdata',res.data.data);
+                        this.$router.push("/admin/admhome");
+                    }
+                    else{
+                        this.$store.dispatch('member/setdata',res.data.data);
+                        this.$store.commit('member/setUserdata',res.data.data);
+                        this.$store.commit('order/setUserdata',res.data.data);
+                        this.$router.push("/home/products");
+                    }
+                }     
+                else{
+                    this.$message.error('登入失敗，帳號或密碼可能有誤');
+                    this.$router.push("/login");
+                }
+            })
         },
+        goForgetPSW(){
+            this.$router.push('/forgotPsw');
+        }
     }
 }
 </script>
@@ -90,7 +100,7 @@ export default {
     @media (max-width: 415px) {
         .memberLogin{
             min-width: 300px;
-            padding:0 40px;
+            padding:0 20px;
         }
     }
 </style>

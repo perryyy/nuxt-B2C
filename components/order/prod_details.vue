@@ -2,6 +2,7 @@
     <div class="prod_details">
         <div class="back_btn">
             <el-button @click="back">回上頁</el-button>
+            <el-button type="danger" plain v-if="orderstatus==='N'" @click="canccelbuy">取消訂單</el-button>
         </div>
         <div class="card">
             <div class="card_top">
@@ -18,34 +19,34 @@
                         label="商品資料"
                         width="80">
                         <template slot-scope="scope">
-                           <img :src="scope.row.img" min-width="60" height="60" />
+                           <img :src="'data:image/jpg;base64,'+scope.row.img" min-width="60" height="60" />
                         </template>
                     </el-table-column>
                     <el-table-column
-                        prop="name"
+                        prop="prod_name"
                         label=""
                         width="260"
                         align="center">
                     </el-table-column>
                     <el-table-column
-                        prop="sale"
+                        prop="prod_sale"
                         label="優惠"
                         width="180"
                         align="center">
                     </el-table-column>
                     <el-table-column
-                        prop="price"
+                        prop="prod_price"
                         label="單件價格">
                     </el-table-column>
                     <el-table-column
-                        prop="qty"
+                        prop="prod_qty"
                         label="數量">
                     </el-table-column>
                     <el-table-column
                         label="小計"
                         align="center">    
                         <template slot-scope="scope">
-                            <p>{{(scope.row.price-scope.row.sale)*scope.row.qty}}</p>
+                            <p>{{(scope.row.prod_price-scope.row.prod_sale)*scope.row.prod_qty}}</p>
                         </template>
                     </el-table-column>
                     </el-table>
@@ -67,23 +68,7 @@
 export default {
     data(){
         return{
-            total:0,
-            sale:0,
-            freight:0,
-            subtotal:0,
-            prod_details:[
-                {name:'里肌總匯',sale:0,price:45,qty:1,img:'https://fakeimg.pl/60x60/'},
-                {name:'厚切牛肉堡',sale:20,price:70,qty:1,img:'https://fakeimg.pl/60x60/'},
-            ]
         }
-    },
-    created(){
-        const sum = this.prod_details.reduce((a, b) => {
-            return a + (b.price-b.sale )* b.qty;
-        }, 0)
-        this.subtotal=sum;
-        this.total=sum-this.sale-this.freight;
-
     },
     methods:{
         back(){
@@ -92,15 +77,55 @@ export default {
         addcart(){
             let data=[];
             for(let i =0; i<this.prod_details.length;i++){
-                let cartName =this.prod_details[i].name;
-                let cartprice =this.prod_details[i].price;
-                let cartsale =this.prod_details[i].sale;
-                let datatmp={itemname:cartName,itemprice:cartprice,itemsale:cartsale,itemqty:1,img:'https://fakeimg.pl/60x60/'};
+                let pid = this.prod_details[i].pid;
+                let mid = this.mid;
+                let qty = this.prod_details[i].prod_qty;
+                let datatmp={pid:pid,mid:mid,qty:qty};
                 data.push(datatmp);
             }
-            // let data=[{itemname:cartName,itemprice:cartNowprice}];
-            console.log(data);
+            let MID = {MID:this.mid} ;
+            const result =Object.assign(data,MID);
             this.$store.dispatch('cart/addCarts',data);
+            this.$message({
+                message: '新增成功',
+                type: 'success'
+            });
+        },
+        canccelbuy(){
+            this.$store.dispatch('order/cancelPurchase',this.oid);
+            this.$router.push('/member');
+        }
+    },
+    computed:{
+        prod_details(){
+            return this.$store.state.orderdetails.orderdetails
+        },
+        img(){
+            return "https://fakeimg.pl/60x60/"
+        },
+        total(){
+            return this.$store.state.order.order_m[0].total
+        },
+        sale(){
+            return this.$store.state.order.order_m[0].discount
+        },
+        freight(){
+            return this.$store.state.order.order_m[0].freight
+        },
+        mid(){
+            return this.$store.state.member.mid
+        },
+        subtotal(){
+            const sum = this.prod_details.reduce((a, b) => {
+                return a + (b.prod_price-b.prod_sale )* b.prod_qty;
+                }, 0)
+            return sum;
+        },
+        orderstatus(){
+            return this.$store.state.order.order_m[0].order_status;
+        },
+        oid(){
+            return this.$store.state.order.order_m[0].oid
         }
     }
 }

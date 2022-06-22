@@ -2,7 +2,6 @@
     <div class="pageheader">
         <div class="left">
             <el-breadcrumb separator-class="el-icon-arrow-right">
-            <!-- <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item> -->
             <el-breadcrumb-item v-for="(item,index) in routerData":key="index" :to="item.path" >{{item.meta.title||item.name}}</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
@@ -29,7 +28,7 @@ export default{
             this.$router.push("/Login");
             // localStorage.removeItem('username');
             // localStorage.removeItem('password');
-            localStorage.removeItem('device');
+            // localStorage.removeItem('device');
         }
     },
     data(){
@@ -50,8 +49,8 @@ export default{
 <style scoped>
     .pageheader{
         width: 100%;
-        padding:  20px;
-        height: 11vh;
+        padding:  16px;
+        height: 10vh;
         background-color: 	#F0F0F0;
         display: flex;
         align-items: center;

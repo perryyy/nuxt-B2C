@@ -1,7 +1,6 @@
 <template>
     <div class="home">
         <div class="header">
-            <!-- <pageheader /> -->
             <component :is="nowHeader" />
         </div>
         <div class="bottom">

@@ -1,35 +1,49 @@
 <template>
     <div class="mobilenav">
         <ul>
-            <li class="all_prod">所有餐點</li>
+            <li class="all_prod" @click="getAllProduct()">所有餐點</li>
             <li class="sales">超優惠組合</li>
         </ul>
         <div class="title">分類</div>
         <div class="category">
             <ul>
-                <li v-for="(item,index) in categoryItem" :key="index" class="category_item" @click="changetitle(item)">{{item}}</li>
+                <li v-for="(item,index) in categoryItem" :key="index" class="category_item" @click="changetitle(item.name)">{{item.name}}</li>
             </ul>
         </div>
         <div class="brand">
             <ul>
-                <li v-for="(item,index) in brandItem" :key="index" class="brandItem_item" @click="changetitle(item)">{{item}}</li>
+                <li v-for="(item,index) in foodItem" :key="index" class="brandItem_item" @click="changetitle(item.name)">{{item.name}}</li>
             </ul>
         </div>
     </div>
 </template>
 <script>
 export default {
-data(){
+    data(){
         return{
-            categoryItem:['漢堡','蛋餅','捲餅','總匯三明治','麵類','吐司、厚片','美味小點'],
-            brandItem:['厚切牛肉蛋堡','薯餅蛋餅','醬燒雞總匯','果醬厚片','鐵板麵','蔥抓餅加蛋','熱狗']
         }
     },
     methods:{
         changetitle(x){
+            this.$store.dispatch('product/getProductCategory',x);
             this.$store.dispatch('setting/changeTitle',x);
+        },
+        getAllProduct(){
+            this.$store.dispatch('product/getProduct');
         }
-    }
+    },
+    computed:{
+        categoryItem(){
+            return this.$store.state.param.category
+        },
+        foodItem(){
+            return this.$store.state.param.Foods
+        },
+    },
+    created(){
+        this.$store.dispatch('param/getCategory',{category:'種類'});
+        this.$store.dispatch('param/getFood',{category:'熱門點心'});
+    },
 }
 </script>
 <style scoped>
@@ -51,6 +65,9 @@ data(){
         border-bottom: 1px solid  #ADADAD;
         padding: 4px;
     }
+    .category_item:hover,.brandItem_item:hover{
+        background-color: #e0dede;
+    }
     ul{
        padding: 4px;
         margin:0;
@@ -58,7 +75,6 @@ data(){
         list-style-type: none;
     }
     .category,.brand{
-        /* color:#ADADAD; */
     }
     .title{
         background-color:#e0dede;

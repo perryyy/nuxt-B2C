@@ -39,5 +39,6 @@ export default{
 <style scoped>
     .top,.bottom{
         margin-top: 8%;
+        z-index: 99999;
     }
 </style>

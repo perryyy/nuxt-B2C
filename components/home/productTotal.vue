@@ -20,30 +20,6 @@ export default {
     layout:'default',
     data(){
         return{
-            // totalproducts:[
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 黑色',price:1880,sale:200},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 蘋果綠',price:1880,sale:300},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:0},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:0},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:240},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 黑色',price:1880,sale:200},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 蘋果綠',price:1880,sale:300},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:0},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:0},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:240},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 黑色',price:1880,sale:200},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 蘋果綠',price:1880,sale:300},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:0},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:0},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:240},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 黑色',price:1880,sale:200},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 蘋果綠',price:1880,sale:300},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:0},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:0},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 珍珠粉',price:1880,sale:240},
-            
-            // ],
-            // products:[]
         }
     },
     methods:{
@@ -56,12 +32,15 @@ export default {
     components:{
         card
     },
+    created(){
+        this.$store.dispatch('product/getProduct');
+        
+    },
     computed:{
         products(){
-            this.pageSize * this.page - this.pageSize, this.pageSize * this.page
             return this.$store.state.product.products.slice(
-                this.$store.state.setting.pagesize * this.$store.state.setting.nowpage -  this.$store.state.setting.pagesize,
-                this.$store.state.setting.pagesize * this.$store.state.setting.nowpage
+                this.pagesize * this.nowpage -  this.pagesize,
+                this.pagesize * this.nowpage
             );
         },
         pagesize(){

@@ -25,6 +25,10 @@ export default{
         deliverdata,
         paydata,
         invoicedata
+    },
+    data(){
+        return{
+        }
     }
 }
 </script>

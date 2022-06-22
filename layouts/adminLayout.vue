@@ -37,11 +37,8 @@ export default {
     .nav{
         min-width: 14%;
         height: 100vh;
-        /* padding-left: 10%; */
     }
     .main{
-        /* width:86%; */
-        /* height: 88vh; */
         background-color: 	#F0F0F0;
     }
     .header{

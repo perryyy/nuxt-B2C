@@ -1,49 +1,80 @@
 <template>
-    <div class="mob_order">
-         <el-table
+    <div class="order">
+        <el-table
         :data="orderData"
-        style="width: 100%">
+        highlight-current-row
+        style="width: 99.9%"
+        @row-click="rowClick" >
         <el-table-column
-            prop="orderId"
-            label="訂單編號"
-            align="center"
+            type="index"
+            label="#"
+            width="30"
             >
         </el-table-column>
         <el-table-column
-            prop="totol"
-            label="合計"
-            align="center">
+            prop="order_date"
+            :formatter="dateFormat"
+            width="110"
+            label="訂單日期"
+            >
         </el-table-column>
         <el-table-column
-            prop="orderstatus"
-            label="狀態"
-            align="center">
+            prop="total"
+            width="70"
+            label="合計">
         </el-table-column>
-         <el-table-column
-            label="操作"
-            align="center"
-        >
-        <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-        </template>
+        <el-table-column
+            prop="order_status"
+            label="訂單狀態"
+            :formatter="statusFormat">
         </el-table-column>
         </el-table>
     </div>
 </template>
 <script>
+import moment from 'moment';
 export default {
     data() {
         return {
-            orderData:[
-                {orderId:123456,orderdate:'2022/03/11',totol:75,orderstatus:'已完成'}
-            ]
+
         }
     },
     methods:{
         handleClick(x){
-            console.log(x);
+            this.$store.dispatch('orderdetails/getData',x);
+            this.$store.dispatch('order/getOrderSingle',x);
+            this.$router.push('/home/orderdetail')
+        },
+        dateFormat(order_date){
+            return moment(order_date).format('YYYY-MM-DD')
+        },
+        statusFormat(row,col,order_status){
+            if(order_status == "N")
+            {
+                return "未完成"
+            }
+            else{
+                return "已完成"
+
+            }
+        },
+        rowClick(row, column, event){
+            // console.log(row, column, event)
+            this.$store.dispatch('orderdetails/getData',row.oid);
+            this.$store.dispatch('order/getOrderSingle',row.oid);
             this.$router.push('/home/orderdetail')
         }
+    },
+    computed:{
+        mid(){
+            return this.$store.state.member.mid;
+        },
+        orderData(){
+            return this.$store.state.order.orderList;
+        },
+    },
+    created(){
+        this.$store.dispatch('order/getOrder',this.mid)
     }
 }
 </script>

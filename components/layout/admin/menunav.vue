@@ -6,21 +6,33 @@
         </div>
         <div class="bottom">
             <el-menu class="el-menu-vertical-demo menu" :collapse="IsCollapse" :collapse-transition='false'>
-                <el-menu-item index="1" @click="$router.push('/admin/admhome/admMember')">
+                <el-menu-item index="1"  @click="$router.push('/admin/admhome/admNowOrder')">
+                    <i class="el-icon-copy-document menu-item"></i>
+                    <span slot="title" class="menu-item">目前訂單</span>
+                </el-menu-item>
+                <el-menu-item index="2" @click="$router.push('/admin/admhome/admMember')">
                     <i class="el-icon-user menu-item" ></i>
                     <span slot="title" class="menu-item">會員管理</span>
                 </el-menu-item>
-                <el-menu-item index="2"  @click="$router.push('/admin/admhome/admProd')">
+                <el-menu-item index="3"  @click="$router.push('/admin/admhome/admProd')">
                     <i class="el-icon-present menu-item"></i>
                     <span slot="title" class="menu-item">商品管理</span>
                 </el-menu-item>
-                <el-menu-item index="3"  @click="$router.push('/admin/admhome/admOrder')">
+                <el-menu-item index="4"  @click="$router.push('/admin/admhome/admOrder')">
                     <i class="el-icon-copy-document menu-item"></i>
-                    <span slot="title" class="menu-item">訂單管理</span>
+                    <span slot="title" class="menu-item">歷史訂單</span>
                 </el-menu-item>
-                <el-menu-item index="4"  >
+                <!-- <el-menu-item index="5"  >
                     <i class="el-icon-tickets menu-item"></i>
                     <span slot="title" class="menu-item">顧客建議</span>
+                </el-menu-item> -->
+                <el-menu-item index="6"  @click="$router.push('/admin/admhome/admParam')">
+                    <i class="el-icon-setting menu-item"></i>
+                    <span slot="title" class="menu-item">參數管理</span>
+                </el-menu-item>
+                <el-menu-item index="7"  @click="$router.push('/admin/admhome/admPerformance')">
+                    <i class="el-icon-data-analysis menu-item"></i>
+                    <span slot="title" class="menu-item">業績查詢</span>
                 </el-menu-item>
             </el-menu>
         </div>
@@ -43,8 +55,7 @@ export default{
         width: 100%;
     }
     /deep/.el-menu{
-        /* height: 100vh; */
-        /* padding: 0 20px; */
+        border: none;
     }
     .menu-item{
         color:	#6C6C6C;

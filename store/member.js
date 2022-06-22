@@ -1,25 +1,62 @@
+import {getUser,addUser,editUser,removeUser,AdmAdd,AdmGetMember,AdmGetMemberDetails,AdmAddMember,AdmEditMember,AdmRemoveMember} from '../plugins/api';
+import {API} from '@/plugins/axios';
 export const state = () =>({
     username:'',
-    password:'',
     phonenumber:'',
     email:'',
+    sex:'',
+    birth:'',
     auth:'none',
+    mid:0,
     token:'',
+    startdate:'',
+    enddate:'',
+    status:'',
     key_word:'',
+    member:[],
     // Admin user none
-    memberList:[
-        {email:'perry@abc.com',username:'Perry',password:'Perry',auth:'user'},
-        {email:'Admin@abc.com',username:'Admin',password:'Admin',auth:'Admin'},
-    ],
-    memberListBak:[
-        {email:'perry@abc.com',username:'Perry',password:'Perry',auth:'user'},
-        {email:'Admin@abc.com',username:'Admin',password:'Admin',auth:'Admin'},
-    ]
+    memberList:[  ],
+    memberListBak:[ ],
 });
 
 export const actions ={
+    getMember({commit}){
+       API('get','AdmMember').then((res)=>{
+        commit('GetMember',res.data);
+       })
+   },
+    register({commit},data){
+        addUser({data})
+        .then(res=>{
+            commit('Register',res.data)
+        })
+    },
+    getDetails({commit},data){
+        API('get',`AdmMember/${data.mid}`).then((res)=>{
+            commit('SetDetails',res.data);
+        })
+    },
+    editData({commit},data){
+        API('put',`AdmMember/${data.mid}`,data).then((res)=>{
+            commit('SetDetails',res.data);
+        })
+    },
+    async removedata({commit},data){
+        await API('delete',`AdmMember/${data.mid}`).then((res)=>{
+            commit('Removedata',res.data);
+        })
+        await API('get','AdmMember').then((res)=>{
+            commit('GetMember',res.data);
+        })
+    },
     setdata({commit},data){
         commit('Setdata',data)
+    },
+    setauth({commit},data){
+        commit('Setauth',data)
+    },
+    setToken({commit},data){
+        commit('SetToken',data)
     },
     adduser({commit},data){
         commit('Adduser',data)
@@ -27,47 +64,51 @@ export const actions ={
     getdata({commit},data){
         commit('Getdata',data)
     },
-    editdata({commit},data){
-        commit('Editdata',data)
-    },
-    removedata({commit},data){
-        commit('Removedata',data)
-    },
     searchitem({commit},data){
         commit('Searchitem',data)
     },
     allitem({commit}){
         commit('Allitem')
-    },
+    }
 };
 
 export const mutations ={
     Setdata(state,data){
         state.username=data.username,
-        state.password=data.password,
-        state.phonenumber='',
+        state.phonenumber=data.phone,
         state.email=data.email,
         state.auth=data.auth,
-        state.token=data.token
+        state.token=data.token,
+        state.mid=data.mid,
+        state.sex=data.sex,
+        state.birth=data.birth,
+        state.startdate=data.startdate,
+        state.enddate=data.enddate,
+        state.status=data.status
+    },
+    setauth(state,data){
+        state.auth=data
+    },
+    setstartdate(state,data){
+        state.startdate=data
+    },
+    setenddate(state,data){
+        state.enddate=data
+    },
+    setstatus(state,data){
+        state.status=data
+    },
+    GetMember(state,data){
+        state.memberList=data;
+        state.memberListBak=data;
     },
     Adduser(state,data){
         state.memberList.push(data);
     },
     Getdata(state,data){
         state.username=state.memberList[data].username
-        state.password=state.memberList[data].password
         state.email=state.memberList[data].email
         state.auth=state.memberList[data].auth
-    },
-    Editdata(state,data){
-        let i = data.index;
-        state.memberList[i].username=data.username;
-        state.memberList[i].password=data.password;
-        state.memberList[i].email=data.email;
-        state.memberList[i].auth=data.auth;
-    },
-    Removedata(state,data){
-        state.memberList.splice(data,1)
     },
     Allitem(state){
         state.memberList=state.memberListBak;
@@ -80,20 +121,75 @@ export const mutations ={
     setusername(state,val){
         state.username=val;
     },
-    setpassword(state,val){
-        state.password=val;
-    },
     setemail(state,val){
         state.email=val;
     },
-    setauth(state,val){
+    setsex(state,val){
+        state.sex=val;
+    },
+    setbirth(state,val){
+        state.birth=val;
+    },
+    setmid(state,val){
+        state.mid=val;
+    },
+    Setauth(state,val){
         state.auth=val;
+    },
+    SetToken(state,val){
+        state.token=val;
     },
     setphonenumber(state,val){
         state.phonenumber=val;
-    }
+    },
+    setmember(state,val){
+        state.member=val;
+    },
+
+    //接API
+    GetDetails(state,val){
+        console.log('1',val)
+        state.username=val.data.username;
+        state.email=val.data.email;
+        state.sex=val.data.sex;
+        state.birth=val.data.birth;
+        state.auth=val.data.auth;
+        state.mid=val.data.mid;
+        state.startdate=val.data.startdate;
+        state.enddate=val.data.enddate;
+        state.status=val.data.status;
+    },
+    SetDetails(state,val){
+        state.username=val.username;
+        state.email=val.email;
+        state.sex=val.sex;
+        state.birth=val.birth;
+        state.auth=val.auth;
+        state.mid=val.mid;
+        state.startdate=val.startdate;
+        state.enddate=val.enddate;
+        state.status=val.status; 
+    },
+    EditData(state,val){
+        state.username=val.username;
+        state.email=val.email;
+        state.auth=val.auth;
+        state.mid=val.mid;
+    },
+    Removedata(state,val){
+        state.memberList=val;
+        state.memberListBak=val;
+    },
+    Register(state,val){
+        state.resStatus=val.status
+    },
+    setUserdata(state,val){
+        state.member=val
+    },
 };
 
 export const getters ={
-    
+    getToken:(state)=>{
+        return state.token;
+    }
 };

@@ -9,11 +9,11 @@
                </div>
                <div class="username">
                    <span >收件人姓名</span>
-                   <input type="text" class="form-control">
+                   <input type="text" class="form-control" v-model="username">
                </div>
                <div class="userphone">
                    <span >收件人電話號碼</span>
-                   <input type="text" class="form-control">
+                   <input type="text" class="form-control" v-model="phone">
                </div>
                <el-divider></el-divider>
                <div class="store">
@@ -29,19 +29,27 @@ import {  mapGetters } from 'vuex';
 export default {
     data(){
         return{
-            checked:false
+            checked:false,
+            username:'',
+            phone:''
         }
     },
     computed:{
         ...mapGetters({
-            subtotal: 'cart/totalAmt'
+            subtotal: 'cart/totalAmt',
+            freight: 'cart/freight',
         }),
-        freight(){
-            if (this.subtotal >= 488){
-                return 0
+    },
+    watch:{
+        checked(nv,ov){
+            console.log(nv,ov)
+            if(nv==true){
+                this.username = this.$store.state.order.username;
+                this.phone = this.$store.state.order.phone;
             }
             else{
-                return 60
+                this.username = '';
+                this.phone = '';               
             }
         }
     }
@@ -92,5 +100,10 @@ export default {
     .store /deep/.el-button{
         width: 100%;
         margin-top: 2%;
+    }
+    @media screen and (max-width: 415px){
+        .deliverdata{
+            padding: 0;
+        }
     }
 </style>

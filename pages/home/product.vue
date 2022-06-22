@@ -3,48 +3,63 @@
         <div class="product_top">
             <div class="prod_img">
                 <div class="top"> 
-                    <img src="https://fakeimg.pl/400x400/">     
+                     <el-skeleton style="width: 400px" :loading="loading" animated>
+                        <template slot="template">
+                            <el-skeleton-item
+                            variant="image"
+                            style="width: 400px; height: 400px;"
+                            />
+                        </template>
+                        <template>
+                            <img :src="'data:image/jpg;base64,'+ this.nowImg" height="400" width="400" >
+                        </template>
+                     </el-skeleton>  
                 </div>
                 <div class="middle">
-                    <el-carousel :interval="4000" type="card" height="200px">
-                        <el-carousel-item v-for="item in 6" :key="item">
-                            <h3 class="medium">{{ item }}</h3>
-                        </el-carousel-item>
-                    </el-carousel>
+                     <el-skeleton  :loading="loading" animated>
+                        <template slot="template">
+                            <el-skeleton-item
+                            variant="image"
+                            style="width: 200px; height: 200px;"
+                            />
+                        </template>
+                        <template >
+                            <div style="display:flex">
+                                <div v-for="(item,i) in product.img" class="image" @click="test(item)">
+                                    <img :src="'data:image/jpg;base64,'+item" class="img_size">
+                                </div>
+                            </div>
+                        </template>
+                     </el-skeleton>                      
                 </div>
             </div>
 
             <div class="prod_conent">
                 <div class="item_name item">
-                    <div>{{name}}</div>
-                    <!-- <div class="star">
-                    <vue-star  color="#F05654">
-                        <i class="el-icon-star-on" slot="icon"></i>
-                    </vue-star>
-                    </div> -->
+                    <div>{{product.name}}</div>
                 </div>
                 <div class="item_price item">
-                    <div class="font " :class="{price:sale}">NT＄{{price}}</div>
-                    <div class="font " v-if="sale">NT＄{{price - sale}}</div>
+                    <div class="font " :class="{price:product.sale}">NT＄{{product.price}}</div>
+                    <div class="font " v-if="product.sale">NT＄{{product.price - product.sale}}</div>
                 </div>
-                <div class="item_size item">
-                    
+                <div class="item_size item"  v-if="product.qty>0">
+                    目前還剩 {{product.qty}}個 ！！
                 </div>
                 <div class="item_qty item">
-                    <el-input-number v-model="num" size="medium" @change="handleChange" :min="1" :max="10" label="描述文字"></el-input-number>
+                    <el-input-number v-model="num" size="medium"  :min="1" :max="product.qty" label="描述文字"></el-input-number>
                 </div>
                 <div class="btn_cart item" v-if="auth==='user'">
-                    <el-button type="info" @click="addCart">加到購物車</el-button>
+                    <el-button type="info" @click="addCart" v-if="product.qty>0">加到購物車</el-button>
+                    <el-button type="info" disabled v-else>補貨中</el-button>
                 </div>
                 <div class="item_desc item">
-                    <el-collapse v-model="activeNames" @change="handleChange">
+                    <el-collapse v-model="activeNames">
                         <el-collapse-item title="餐點描述" name="1">
-                            <div>与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；</div>
-                            <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
+                            <div class="description">{{product.description}}</div>                          
                         </el-collapse-item>
                         <el-collapse-item title="營養標示" name="2">
-                            <div>控制反馈：通过界面样式和交互动效让用户可以清晰的感知自己的操作；</div>
-                            <div>页面反馈：操作后，通过页面元素的变化清晰地展现当前状态。</div>
+                            <div class="description">控制反馈：通过界面样式和交互动效让用户可以清晰的感知自己的操作；</div>
+                            <div class="description">页面反馈：操作后，通过页面元素的变化清晰地展现当前状态。</div>
                         </el-collapse-item>
                     </el-collapse>
                 </div>
@@ -58,42 +73,39 @@
     </div>
 </template>
 <script>
+import {getDetails} from '@/plugins/api';
 import other from '../../components/productCom/otherProduct.vue';
 export default {
     layout:'prod_layout',
     computed:{
-        name(){
-            return this.$store.state.product.name
-        },
-        price(){
-            return this.$store.state.product.price
-        },
-        sale(){
-            return this.$store.state.product.sale
-        },
         auth(){
             return this.$store.state.member.auth
-        }
+        },
+        product(){
+            this.nowImg=this.$store.state.product.product.img[0]
+            return this.$store.state.product.product
+        },
+        loading(){
+            return this.$store.state.product.loading
+        },
     },
     data(){
         return{
             num:0,
-            activeNames: ['1']
+            activeNames: ['1','2'],
+            // product:[],
+            // loading:false,
+            nowImg:''
         }
     },
     methods:{
-        handleChange(value) {
-            console.log(value);
-        },
         addCart(){
-            let cartName =this.$store.state.product.name;
-            let cartprice =this.$store.state.product.price;
-            let cartsale =this.$store.state.product.sale;
-            let cartNowprice =cartprice-cartsale;
-            // let data = {itemname:cartName,itemprice:cartNowprice};
-            let data = {itemname:cartName,itemprice:cartprice,itemsale:cartsale,itemqty:1,img:'https://fakeimg.pl/60x60/'};
-            console.log(data);
+            let data ={pid:this.$store.state.product.product.pid,mid:this.$store.state.member.mid}
             this.$store.dispatch('cart/addCart',data);
+            this.$store.dispatch('cart/getCart',{mid:this.$store.state.member.mid});
+        },
+        test(x){
+            this.nowImg=x;
         }
     },
     components:{
@@ -127,6 +139,25 @@ export default {
         flex-direction: column;
         width: 100vw;
     }
+    .img_area{
+        width: 100%;
+        display: flex;
+    }
+    .image{
+        width: 30%;
+        margin: 0 1%;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        transition: 0.3s;
+    }
+    .image:hover{
+        transform: translateY(-10px);
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+    }
+    .img_size{
+        height: 100%;
+        width: 100%;
+    }
     .item{
         width: 100%;
     }
@@ -147,6 +178,7 @@ export default {
         color: rgb(168, 168, 168);
         font-size: 16px;
         margin-top: 3%;
+        margin-bottom: -1%;
     }
     .item_qty{
         margin-top: 5%;
@@ -161,7 +193,7 @@ export default {
         margin-top: 3%;
     }
     .middle{
-        margin-top: 3%;
+        margin-top: 5%;
     }
     .el-carousel__item h3 {
         color: #475669;
@@ -192,6 +224,13 @@ export default {
     .star{
         margin-top: -6%;
     }
+    .description{
+        padding: 0 10px;
+    }
+    .thumbnail{
+        height: 200px;
+        width: 200px;
+    }
     @media (max-width: 415px) {
         .product_top{
            display: flex;
@@ -202,11 +241,18 @@ export default {
            padding: 0;
         }
         .prod_conent{
-           margin: 0;
+           margin: 2% 0 0 0;
            padding: 0 10px;
         }
         .star{
             padding-left: -6%;
+        }
+        .prod_img{
+            padding: 2%;
+        }
+        .thumbnail{
+            height: 100px;
+            width: 200px;
         }
     }
 </style>

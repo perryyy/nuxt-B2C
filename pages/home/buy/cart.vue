@@ -48,4 +48,11 @@ export default {
         width: 100%;
         margin-top: 3%;
     }
+    @media (max-width: 415px) {
+        .buycart{
+            width: 100vw;
+            padding: 20px;
+        }
+    }
+
 </style>

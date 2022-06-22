@@ -7,28 +7,28 @@
             label="商品資料"
             width="80">
             <template slot-scope="scope">
-                <img :src="scope.row.img" min-width="60" height="60" />
+                <img :src="'data:image/jpg;base64,'+scope.row.img" min-width="60" height="60" />
             </template>
         </el-table-column>
         <el-table-column
-            prop="itemname"
+            prop="name"
             label=""
             width="260"
             align="center">
         </el-table-column>
         <el-table-column
-            prop="itemsale"
+            prop="sale"
             label="優惠"
             width="180"
             align="center">
         </el-table-column>
         <el-table-column
-            prop="itemprice"
+            prop="price"
             label="單件價格"
             align="center">
         </el-table-column>
         <el-table-column
-            prop="itemqty"
+            prop="nowqty"
             label="數量"
             align="center">
         </el-table-column>
@@ -36,27 +36,24 @@
             label="小計"
             align="center">    
             <template slot-scope="scope">
-                <span class="little"  @click="goLink(scope.row)">{{(scope.row.itemprice-scope.row.itemsale)*scope.row.itemqty}}</span>
+                <span class="little"  @click="goLink(scope.row)">{{(scope.row.price-scope.row.sale)*scope.row.nowqty}}</span>
             </template>
         </el-table-column>
         <el-table-column
             label="操作"
             align="center">    
             <template slot-scope="scope">
-               <i class="el-icon-circle-close close-icon" @click="removeitem(scope.$index)"></i>
+               <i class="el-icon-circle-close close-icon" @click="removeitem(scope.row)"></i>
             </template>
         </el-table-column>
         </el-table>
     </div>
 </template>
 <script>
+import {  mapGetters } from 'vuex';
 export default {
     data() {
         return {
-            // prod_details:[
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 黑色',sale:0,price:1880,qty:1,img:'https://fakeimg.pl/60x60/'},
-            //     {name:'nike new essntl clctn dj7669 010  女款 帽T 蘋果綠',sale:20,price:1880,qty:1,img:'https://fakeimg.pl/60x60/'},
-            // ]
         }
     },
     methods:{
@@ -66,21 +63,26 @@ export default {
         },
         removeitem(a){
             console.log(a);
-            this.$store.dispatch('cart/removeCart',a);
+            this.$store.dispatch('cart/removeCart',a.cid);
         },
         goLink(x){
             console.log(x);
         },
     },
-    created(){
-        console.log(this.prod_details)
-    },
     computed:{
-        prod_details(){
-            return this.$store.state.cart.carts
-        },
+        ...mapGetters({
+            prod_details: 'cart/AllCarts'
+        }),
         subtotal(){
-            return (this.scope.row.itemprice-this.scope.row.itemsale)*this.scope.row.itemqty
+            let amt =0;
+            for(let i =0; i<this.prod_details.length;i++){
+                amt+=((this.prod_details[i].price-this.prod_details[i].sale)*this.prod_details[i].nowqty)
+            }
+            console.log(1,amt)
+            return amt
+        },
+        nowImg(){
+            return 'https://fakeimg.pl/60x60/'
         }
     }
 }

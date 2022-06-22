@@ -1,6 +1,6 @@
 <template>
     <div class="pretty_input">
-        <input type="text" placeholder="請輸入內容" v-model="pretty_input_text" @keypress="searchproduct"> 
+        <input type="text" placeholder="請輸入內容" v-model.trim="pretty_input_text" @keypress="searchproduct"> 
         <label for="input">請輸入內容</label>
         <div class="bottom-line"></div>
     </div>
@@ -16,12 +16,11 @@ export default {
     methods:{
         searchproduct(){
             if(this.pretty_input_text.length>0){
-                console.log(this.pretty_input_text);
                 this.$store.dispatch('product/searchitem',this.pretty_input_text);
                 this.$emit('changeType',false);
             }
             else{
-                this.$store.dispatch('product/allitem');
+                this.$store.dispatch('product/getProduct');
                 this.$emit('changeType',false);
             }
         }

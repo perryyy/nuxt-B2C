@@ -1,17 +1,28 @@
+import {AddOrder,getOrder,getOrderSingle,getMemberTotal,cancelbuy} from '@/plugins/api';
+import {API} from '@/plugins/axios';
 export const state = () =>({
     orderList:[
-        {prodname:'里肌總匯',price:45,username:'Perry',status:'已完成'},
-        {prodname:'厚切牛肉堡',price:70,username:'Mark',status:'未完成'},
     ],
     orderListBak:[
-        {prodname:'里肌總匯',price:45,username:'Perry',status:'已完成'},
-        {prodname:'厚切牛肉堡',price:70,username:'Mark',status:'未完成'},
     ],
+    order_m:[],
     prodname:'',
     price:0,
     username:'',
     status:'',
     key_word:'',
+    //API
+    username:'',
+    email:'',
+    phone:'',
+    orderNotes:'',
+    deliver_name:'',
+    deliver_phone:'',
+    pay_method:'',
+    notes:'',
+    location:'',
+    delivermethods:'',
+    memberOrder:0
 });
 export const actions ={
     setdata({commit},data){
@@ -34,6 +45,32 @@ export const actions ={
     },
     allitem({commit}){
         commit('Allitem')
+    },
+    //API
+    //拿會員所有訂單
+    getOrder({commit},data){
+        API('get','Order',data).then((res)=>{
+            // console.log(res.data)
+            commit('ReflashOrder',res.data)
+        })
+    },
+    //拿會員單一筆訂單主檔
+    getOrderSingle({commit},data){
+        API('get',`Order/getSingle/${data}`).then((res)=>{
+            commit('ReflashOrder_m',res.data)
+        })
+    },
+    //拿會員至今消費總額
+    getTotal({commit},data){
+        API('get',`Order/getMemberTotal/${data}`).then((res)=>{
+            commit('setNowTotal',res.data)
+        })
+    },
+    //取消購買
+    cancelPurchase({commit},data){
+        API('delete',`Order/${data}`).then((res)=>{
+            commit('ReflashOrder',res.data)
+        })
     },
 };
 
@@ -82,6 +119,42 @@ export const mutations ={
     },
     setstatus(state,val){
         state.status=val;
+    },
+    setemail(state,val){
+        state.email=val;
+    },
+    setusername(state,val){
+        state.username=val;
+    },
+    setphone(state,val){
+        state.phone=val;
+    },
+    setPaymethod(state,val){
+        state.pay_method=val;
+    },
+    setLocation(state,val){
+        state.location=val;
+    },
+    setDelivermethods(state,val){
+        state.delivermethods=val;
+    },
+    setNotes(state,val){
+        state.notes=val;
+    },
+    setUserdata(state,val){
+        state.username=val.username;
+        state.phone=val.phone;
+        state.email=val.email;
+    },
+    //API
+    ReflashOrder(state,val){
+        state.orderList = val
+    },
+    ReflashOrder_m(state,val){
+        state.order_m = val
+    },
+    setNowTotal(state,val){
+        state.memberOrder=val;
     }
 };
 

@@ -2,12 +2,12 @@
     <div class="homeheader">
         <div class="title">{{title}}</div>
         <div class="sort">
-            <el-select v-model="selectsort" placeholder="商品排序">
+            <el-select v-model="selectsort" placeholder="商品排序" @change="orderby(selectsort,title)">
                 <el-option
                 v-for="item in sortoptions"
                 :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :label="item.name"
+                :value="item.spare">
                 </el-option>
             </el-select>
         </div>
@@ -16,8 +16,8 @@
                 <el-option
                 v-for="item in countoptions"
                 :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :label="item.name"
+                :value="Number(item.spare)">
                 </el-option>
             </el-select>
         </div>
@@ -27,30 +27,44 @@
 export default {
     data(){
         return{
-            // title:'精選商品',
-            sortoptions: [
-                {value:'商品排序',label: '商品排序'},
-                {value:'價格：由高至低',label: '價格：由高至低'},
-                {value:'價格：由低至高',label: '價格：由低至高'},
-            ],
-            countoptions: [
-                {value:6,label: '每頁顯示6個'},
-                {value:8,label: '每頁顯示8個'},
-                {value:12,label: '每頁顯示12個'},
-            ],
             selectsort: '',
             selectcount: '',
         }
     },
+    created(){
+        this.$store.dispatch('param/getProdSort',{category:'商品排序'});
+        this.$store.dispatch('param/getPageShow',{category:'每頁顯示'});
+    },
     computed:{
         title(){
             return this.$store.state.setting.title;
+        },
+        sortoptions(){
+            return this.$store.state.param.productSort;
+        },
+        countoptions(){
+            return this.$store.state.param.PageShow;
         }
     },
     methods:{
         handleselect(){
-            // console.log(this.selectcount);
             this.$store.dispatch('setting/changepagesize',this.selectcount);
+        },
+        orderby(x,y){
+            console.log(x,y)
+            let data ={Category:y,orderby:x};
+            if(y!='所有餐點' && y!='超優惠組合' && x!=''){
+                this.$store.dispatch('product/exception',data);
+            }
+            else if(x==''&&y=='超優惠組合'){
+                  this.$store.dispatch('product/getProductCategory',y);
+            }
+            else if(x==''&&y==''){
+
+            }
+            else{
+                this.$store.dispatch('product/productorderby',x);
+            }
         }
     }
 }

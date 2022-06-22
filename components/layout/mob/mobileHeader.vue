@@ -8,7 +8,7 @@
         </div>
         <div class="title" @click="home">Perry</div>
         <div class="cart" v-if="auth==='user'" @click="Cartdrawer = true">
-            <el-badge :value="storeCart.length" :max="5" class="item" v-if="storeCart.length">
+            <el-badge :value="cartlen" :max="5" class="item" v-if="storeCart.length">
                 <i class="el-icon-goods"></i> 
             </el-badge>    
             <div v-else>
@@ -35,7 +35,7 @@
             :direction="direction"
             :modal-append-to-body='false'
             :append-to-body="true">
-            <mobilenav />
+            <mobilenav @changedrawer="changedrawer"/>
             </el-drawer>
         </div>
         <div class="Cartdrawer">
@@ -57,6 +57,7 @@
 import prettyinput from '../preetyinput.vue';
 import mobilenav from './mobilenav.vue';
 import cart from '../../cart/mob/mobilecart.vue';
+import {  mapGetters } from 'vuex';
 export default {
     data(){
         return{
@@ -84,8 +85,12 @@ export default {
         },
         buy(a){
             console.log(a);
-            this.$router.push('/home/buy')
+            this.Cartdrawer=!this.Cartdrawer;
+            this.$router.push('/home/buy');
         },
+        changedrawer(){
+            this.drawer = !this.drawer;
+        }
     },
     computed:{
         storeCart(){
@@ -93,8 +98,17 @@ export default {
         },
         auth(){
             return this.$store.state.member.auth
+        },
+         ...mapGetters({
+            cartlen: 'cart/cartslength'
+        }),
+    },
+    created(){
+        this.$store.dispatch('param/getHeader',{category:'header'});
+        if(this.$store.state.member.mid){
+            this.$store.dispatch('cart/getCart',{mid:this.$store.state.member.mid});
         }
-    }
+    },
 }
 </script>
 <style scoped>
@@ -144,7 +158,7 @@ export default {
         font-style: italic;
     }
     .buy_btn_area{
-        width: 100%;
+        width: 100vw;
         position: fixed;
         bottom: 0;
         padding:10px;

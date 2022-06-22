@@ -3,17 +3,32 @@
         <div class="border">
             <div class="title">
                 <span>付款資料</span> 
-                <span>附加費：NT＄7</span> 
+                <span>附加費：NT＄ {{fee}}</span> 
             </div>
             <div class="content">
-               <span>以選擇的付款方式：請於30分鐘內匯款</span>
+               <span>{{nowcontent}}</span>
             </div>
         </div>
     </div>
 </template>
 <script>
 export default {
-
+    created(){
+        let now_paymethod = this.$store.state.order.pay_method;
+        console.log(now_paymethod)
+        if(now_paymethod=='現金'){
+            this.nowcontent="請於現場結帳";
+        }
+        else{
+            this.nowcontent="以選擇的付款方式：請於30分鐘內匯款";
+        }
+    },
+    data(){
+        return{
+            fee:0,
+            nowcontent:''
+        }
+    }
 }
 </script>
 <style scoped>
@@ -37,5 +52,10 @@ export default {
         font-weight: 600;
         font-size: 12px;
 
+    }
+    @media screen and (max-width: 415px){
+        .paydata{
+            padding: 0;
+        }
     }
 </style>

@@ -4,7 +4,7 @@
                 <el-steps :active="active" finish-status="success" align-center>
                 <el-step title="購物車"></el-step>
                 <el-step title="填寫資料"></el-step>
-                <el-step title="訂單確認"></el-step>
+                <el-step title="完成訂單"></el-step>
                 </el-steps>
             <el-button style="margin-top: 12px;" @click="next" v-if="visible">下一步</el-button>
         </div>
@@ -63,6 +63,9 @@ export default{
     @media (max-width: 415px) {
         .steps{
             padding: 0 10%;
+        }
+        .buy{
+            padding: 20px;
         }
     }
 </style>

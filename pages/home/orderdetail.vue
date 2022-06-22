@@ -1,11 +1,9 @@
 <template>
     <div class="orderdetail">
         <div class="prod_details">
-            <!-- <prod_details /> -->
             <component :is="now_prod"/>
         </div>
         <div class="order_details">
-            <!-- <order_details /> -->
             <component :is="now_order"/>    
         </div>
     </div>

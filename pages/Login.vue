@@ -1,7 +1,7 @@
 <template>
     <div class="login">
-        <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick" :stretch='true'>
-            <el-tab-pane label="註冊會員" name="register"><memberRegister /></el-tab-pane>
+        <el-tabs v-model="activeName" type="border-card"  :stretch='true'>
+            <el-tab-pane label="註冊會員" name="register"><memberRegister @goLogin="goLogin"/></el-tab-pane>
             <el-tab-pane label="會員登入" name="login"><memberLogin /></el-tab-pane>
         </el-tabs>
     </div>
@@ -17,8 +17,8 @@ export default {
       };
     },
     methods: {
-      handleClick(tab, event) {
-        console.log(tab, event);
+      goLogin(){
+          this.activeName='login'
       }
     },
     components:{

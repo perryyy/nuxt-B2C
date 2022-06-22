@@ -12,21 +12,23 @@ export default {
     components:{
         card
     },
+    created(){
+        this.$store.dispatch('product/getrandom');
+    },
     data(){
         return{
-            products:[
-                {name:'蘿蔔糕',price:40,sale:10},
-                {name:'厚切牛肉堡',price:70,sale:0},
-                {name:'果醬厚片',price:25,sale:0},
-            ]
         }
     },
+    computed:{
+        products(){
+            return this.$store.state.product.RandomProduct
+        }
+    }
 }
 </script>
 <style scoped>
     .other{
         width: 100%;
-        /* margin: 0 120px; */
     }
     .title{
         width: 100%;

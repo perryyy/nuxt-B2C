@@ -1,7 +1,7 @@
 <template>
     <div class="ordercart">
         <div class="card">
-            <div class="title">購物車 ({{length}}件) <i class="el-icon-share"></i></div>
+            <div class="title">購物車 ({{cartlen}}件) <i class="el-icon-share"></i></div>
             <div class="list"><cardlist /></div>
             <div class="promotion">
                 <div class="promotion_top">
@@ -24,7 +24,7 @@ import cardlist from './cartlist.vue'
 export default {
     data(){
         return{
-            length:1,
+            
         }
     },
     methods:{
@@ -37,18 +37,18 @@ export default {
     },
     computed:{
         ...mapGetters({
-            totalAmt: 'cart/totalAmt'
+            totalAmt: 'cart/totalAmt',
+            cartlen: 'cart/cartslength'
         }),
         balance(){
             return 488-this.totalAmt
-        }
+        },
     }
 }
 </script>
 <style scoped>
     .ordercart{
         width: 100%;
-        /* padding: 0 40px; */
     }
     .card{
     }
